@@ -2,234 +2,207 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>متجر الدواجن المتطور</title>
+<title>متجر الدواجن</title>
+
 <style>
-:root{ --main: #4CAF50; --secondary: #f44336; }
-body{ margin:0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; direction:rtl; background:#f9f9f9; }
-header{ background:var(--main); color:#fff; padding:15px 20px; display:flex; justify-content:space-between; align-items:center; sticky: top; position: sticky; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-.container{ padding:20px; max-width: 1200px; margin: auto; }
-
-/* الأزرار والحقول */
-button{ background:var(--main); color:#fff; border:none; padding:10px 15px; cursor:pointer; border-radius:5px; transition: 0.3s; }
-button:hover{ opacity: 0.8; }
-.btn-del{ background: var(--secondary); }
-input, select{ padding:10px; margin:5px 0; width:100%; border:1px solid #ddd; border-radius:5px; box-sizing: border-box; }
-
-/* المتجر والبحث */
-.search-bar{ margin-bottom: 20px; }
-.products{ display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:20px; }
-.card{ background:#fff; padding:15px; border-radius:12px; text-align:center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-.card img{ width:100%; height:180px; object-fit: cover; border-radius:8px; background: #eee; }
-.price{ font-weight: bold; color: var(--main); font-size: 1.2em; margin: 10px 0; }
-
-/* السلة */
-.cart-box{ background: #fff; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-right: 5px solid var(--main); }
-.cart-item{ display: flex; justify-content: space-between; border-bottom: 1px inset #eee; padding: 5px 0; }
-
-.admin-section{ background:#fff; padding:20px; margin-top:20px; border-radius:10px; border: 1px solid #ddd; }
-.hide{ display:none; }
-.flex{ display: flex; gap: 10px; align-items: center; }
+:root{
+  --main:#4CAF50;
+}
+body{
+  margin:0;
+  font-family:sans-serif;
+  direction:rtl;
+  background:#f5f5f5;
+}
+header{
+  background:var(--main);
+  color:#fff;
+  padding:15px;
+  text-align:center;
+}
+button{
+  background:var(--main);
+  color:#fff;
+  border:none;
+  padding:8px 12px;
+  cursor:pointer;
+  border-radius:5px;
+}
+input{
+  padding:8px;
+  margin:5px 0;
+  width:100%;
+}
+.container{
+  padding:15px;
+}
+.products{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:10px;
+}
+.card{
+  background:#fff;
+  padding:10px;
+  border-radius:8px;
+  text-align:center;
+}
+.card img{
+  max-width:100%;
+  border-radius:5px;
+}
+.admin{
+  background:#fff;
+  padding:15px;
+  margin-top:20px;
+  border-radius:10px;
+}
+.hide{display:none;}
 </style>
 </head>
+
 <body>
 
 <header>
-  <h2 id="siteName">🐔 متجر الدواجن</h2>
-  <div>
-    <button onclick="toggleCart()">🛒 السلة (<span id="cartCount">0</span>)</button>
-    <button onclick="showLogin()" style="background:rgba(255,255,255,0.2)">الإدارة</button>
-  </div>
+  <h1 id="siteName">🐔 متجر الدواجن</h1>
+  <button onclick="showLogin()">دخول الإدارة</button>
 </header>
 
 <div class="container">
 
-  <div id="cartSection" class="cart-box hide">
-    <h3>🛒 سلة المشتريات</h3>
-    <div id="cartItems"></div>
-    <hr>
-    <div class="flex">
-        <strong>المجموع: <span id="totalPrice">0</span> دينار</strong>
-        <button onclick="sendWhatsApp()">إرسال الطلب عبر واتساب ✅</button>
-    </div>
-  </div>
-
-  <div class="search-bar">
-    <input type="text" id="searchInput" placeholder="ابحث عن منتج..." oninput="loadProducts()">
-  </div>
-
+<!-- المتجر -->
+<div id="shop">
   <div class="products" id="products"></div>
+</div>
 
-  <div id="login" class="hide admin-section">
-    <h3>🔐 دخول الإدارة</h3>
-    <input id="user" placeholder="اسم المستخدم">
-    <input id="pass" type="password" placeholder="كلمة السر">
-    <button onclick="login()">دخول</button>
-    <button class="btn-del" onclick="this.parentElement.classList.add('hide')">إلغاء</button>
-  </div>
+<!-- تسجيل الدخول -->
+<div id="login" class="hide admin">
+  <h3>دخول المدير</h3>
+  <input id="user" placeholder="اسم المستخدم">
+  <input id="pass" type="password" placeholder="كلمة السر">
+  <button onclick="login()">دخول</button>
+</div>
 
-  <div id="admin" class="hide admin-section">
-    <h3>🛠 لوحة التحكم</h3>
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-        <div>
-            <h4>➕ إضافة منتج</h4>
-            <input id="pname" placeholder="اسم المنتج">
-            <input id="pprice" type="number" placeholder="السعر">
-            <label>اختر صورة المنتج:</label>
-            <input id="pimg" type="file" accept="image/*">
-            <button onclick="addProduct()">حفظ المنتج</button>
-        </div>
-        <div>
-            <h4>🎨 الإعدادات</h4>
-            <input id="newName" placeholder="اسم الموقع الجديد">
-            <input type="color" id="newColor" style="height:40px">
-            <button onclick="saveSettings()">حفظ التعديلات</button>
-            <hr>
-            <button class="btn-del" onclick="logout()">تسجيل الخروج</button>
-        </div>
-    </div>
-  </div>
+<!-- لوحة التحكم -->
+<div id="admin" class="hide admin">
+
+<h3>➕ إضافة منتج</h3>
+<input id="pname" placeholder="اسم المنتج">
+<input id="pprice" placeholder="السعر">
+<input id="pimg" placeholder="رابط صورة المنتج">
+<button onclick="addProduct()">إضافة</button>
+
+<hr>
+
+<h3>🎨 إعدادات الموقع</h3>
+<input id="newName" placeholder="اسم الموقع">
+<input type="color" id="newColor">
+<button onclick="saveSettings()">حفظ</button>
+
+<hr>
+
+<h3>👤 إضافة مدير</h3>
+<input id="newUser" placeholder="اسم المستخدم">
+<input id="newPass" placeholder="كلمة السر">
+<button onclick="addAdmin()">إضافة مدير</button>
+
+<button onclick="logout()">تسجيل خروج</button>
+
+</div>
 </div>
 
 <script>
-// --- تهيئة البيانات ---
-let admins = JSON.parse(localStorage.admins || '[{"u":"admin","p":"1234"}]');
-let products = JSON.parse(localStorage.products || '[]');
-let settings = JSON.parse(localStorage.settings || '{"name":"🐔 متجر الدواجن","color":"#4CAF50"}');
-let cart = [];
-let isAdmin = false;
-
-// تطبيق الإعدادات
-function applySettings() {
-    document.documentElement.style.setProperty("--main", settings.color);
-    document.getElementById('siteName').innerText = settings.name;
+// بيانات أولية
+if(!localStorage.admins){
+  localStorage.admins = JSON.stringify([
+    {u:"admin",p:"1234"}
+  ]);
 }
-applySettings();
-
-// --- وظائف المتجر ---
-function loadProducts() {
-    const grid = document.getElementById('products');
-    const search = document.getElementById('searchInput').value.toLowerCase();
-    grid.innerHTML = "";
-
-    products.filter(p => p.name.toLowerCase().includes(search)).forEach((p, i) => {
-        grid.innerHTML += `
-        <div class="card">
-            <img src="${p.img || 'https://via.placeholder.com/150'}" onerror="this.src='https://via.placeholder.com/150'">
-            <h4>${p.name}</h4>
-            <div class="price">${p.price} دينار</div>
-            <button onclick="addToCart(${i})">إضافة للسلة 🛒</button>
-            ${isAdmin ? `<button class="btn-del" onclick="delProduct(${i})">حذف</button>` : ""}
-        </div>`;
-    });
+if(!localStorage.products){
+  localStorage.products = JSON.stringify([]);
+}
+if(!localStorage.settings){
+  localStorage.settings = JSON.stringify({
+    name:"🐔 متجر الدواجن",
+    color:"#4CAF50"
+  });
 }
 
-// --- السلة ---
-function addToCart(index) {
-    cart.push(products[index]);
-    updateCart();
+// تحميل الإعدادات
+const settings = JSON.parse(localStorage.settings);
+document.documentElement.style.setProperty("--main",settings.color);
+siteName.innerText=settings.name;
+
+// عرض المنتجات
+function loadProducts(){
+  products.innerHTML="";
+  JSON.parse(localStorage.products).forEach((p,i)=>{
+    products.innerHTML+=`
+    <div class="card">
+      <img src="${p.img}">
+      <h4>${p.name}</h4>
+      <p>${p.price} دينار</p>
+      ${isAdmin?`<button onclick="del(${i})">حذف</button>`:""}
+    </div>`;
+  });
 }
-
-function updateCart() {
-    const itemsDiv = document.getElementById('cartItems');
-    const countSpan = document.getElementById('cartCount');
-    const totalSpan = document.getElementById('totalPrice');
-    
-    itemsDiv.innerHTML = "";
-    let total = 0;
-    
-    cart.forEach((item, i) => {
-        total += parseFloat(item.price);
-        itemsDiv.innerHTML += `
-        <div class="cart-item">
-            <span>${item.name}</span>
-            <span>${item.price} دينار <button onclick="removeFromCart(${i})" style="padding:2px 5px; background:red">X</button></span>
-        </div>`;
-    });
-    
-    countSpan.innerText = cart.length;
-    totalSpan.innerText = total;
-}
-
-function removeFromCart(i) {
-    cart.splice(i, 1);
-    updateCart();
-}
-
-function toggleCart() {
-    document.getElementById('cartSection').classList.toggle('hide');
-}
-
-function sendWhatsApp() {
-    if(cart.length === 0) return alert("السلة فارغة!");
-    let msg = `طلب جديد من المتجر:%0A`;
-    cart.forEach(item => msg += `- ${item.name} (${item.price} دينار)%0A`);
-    msg += `%0A*المجموع: ${document.getElementById('totalPrice').innerText} دينار*`;
-    window.open(`https://wa.me/9647800000000?text=${msg}`); // استبدل الرقم برقمك
-}
-
-// --- وظائف الإدارة ---
-function showLogin() { document.getElementById('login').classList.remove('hide'); }
-
-function login() {
-    const u = document.getElementById('user').value;
-    const p = document.getElementById('pass').value;
-    if(admins.find(a => a.u === u && a.p === p)) {
-        isAdmin = true;
-        document.getElementById('login').classList.add('hide');
-        document.getElementById('admin').classList.remove('hide');
-        loadProducts();
-    } else alert("بيانات الدخول خاطئة");
-}
-
-function addProduct() {
-    const file = document.getElementById('pimg').files[0];
-    const name = document.getElementById('pname').value;
-    const price = document.getElementById('pprice').value;
-
-    if(!name || !price) return alert("أدخل البيانات كاملة");
-
-    if(file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            saveAndRefresh(name, price, e.target.result);
-        };
-        reader.readAsDataURL(file);
-    } else {
-        saveAndRefresh(name, price, "");
-    }
-}
-
-function saveAndRefresh(name, price, imgData) {
-    products.push({name, price, img: imgData});
-    localStorage.products = JSON.stringify(products);
-    loadProducts();
-    alert("تمت الإضافة بنجاح");
-}
-
-function delProduct(i) {
-    if(confirm("هل أنت متأكد من الحذف؟")) {
-        products.splice(i, 1);
-        localStorage.products = JSON.stringify(products);
-        loadProducts();
-    }
-}
-
-function saveSettings() {
-    settings.name = document.getElementById('newName').value || settings.name;
-    settings.color = document.getElementById('newColor').value;
-    localStorage.settings = JSON.stringify(settings);
-    location.reload();
-}
-
-function logout() {
-    isAdmin = false;
-    document.getElementById('admin').classList.add('hide');
-    loadProducts();
-}
-
-// التشغيل الأولي
+let isAdmin=false;
 loadProducts();
+
+// تسجيل الدخول
+function showLogin(){
+  login.classList.remove("hide");
+}
+function login(){
+  const admins=JSON.parse(localStorage.admins);
+  const ok=admins.find(a=>a.u==user.value && a.p==pass.value);
+  if(ok){
+    isAdmin=true;
+    login.classList.add("hide");
+    admin.classList.remove("hide");
+    loadProducts();
+  }else alert("خطأ بالدخول");
+}
+
+// إضافة منتج
+function addProduct(){
+  const arr=JSON.parse(localStorage.products);
+  arr.push({name:pname.value,price:pprice.value,img:pimg.value});
+  localStorage.products=JSON.stringify(arr);
+  loadProducts();
+}
+
+// حذف منتج
+function del(i){
+  const arr=JSON.parse(localStorage.products);
+  arr.splice(i,1);
+  localStorage.products=JSON.stringify(arr);
+  loadProducts();
+}
+
+// إعدادات الموقع
+function saveSettings(){
+  localStorage.settings=JSON.stringify({
+    name:newName.value,
+    color:newColor.value
+  });
+  location.reload();
+}
+
+// إضافة مدير
+function addAdmin(){
+  const arr=JSON.parse(localStorage.admins);
+  arr.push({u:newUser.value,p:newPass.value});
+  localStorage.admins=JSON.stringify(arr);
+  alert("تمت إضافة المدير");
+}
+
+// خروج
+function logout(){
+  isAdmin=false;
+  admin.classList.add("hide");
+  loadProducts();
+}
 </script>
 
 </body>
